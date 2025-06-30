@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983826481761",
+    "project_id": "oleaone-beeeb",
+    "storage_bucket": "oleaone-beeeb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983826481761:android:1c23a495f95c66a5c12020",
+        "android_client_info": {
+          "package_name": "com.example.firstproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCDP2LHQ2vjj1Gz_gQIOdUe9O9yq9siv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
