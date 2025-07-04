@@ -212,9 +212,8 @@ class _AddformationState extends State<Addformation> {
     }
 
     // Le formulaire complet, repris de ton _buildAddFormationPage()
-    return Scaffold(
-      appBar: AppBar(title: const Text('Ajouter une Formation')),
-      body: SingleChildScrollView(
+    return
+       SingleChildScrollView(
         padding: EdgeInsets.all(formPadding),
         child: Card(
           elevation: 4,
@@ -414,8 +413,7 @@ class _AddformationState extends State<Addformation> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   // Méthode à définir pour ouvrir la popup calendrier

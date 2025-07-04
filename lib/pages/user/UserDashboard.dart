@@ -2,22 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstproject/pages/admin/AdminOrganismesPage.dart';
 import 'package:firstproject/pages/admin/admin_users_page.dart';
+import 'package:firstproject/pages/user/userProfile.dart';
 import 'package:flutter/material.dart';
 import '../../services/auth.dart';
 import '../../widgets/custom_app_bar.dart';
-import 'AdminDepartmentsPage.dart';
-import 'AdminProfilePage.dart';
-import 'AdminReunionsPage.dart';
-import 'AdminStatsPage.dart';
+import 'FormationsdDisponibles.dart';
+import 'package:firstproject/pages/user/HistoriqueFormations.dart';
+import 'package:firstproject/pages/user/UserMessagerie.dart';
+import 'package:firstproject/pages/user/UserReunions.dart';
+import 'package:firstproject/pages/user/UserStatistiques.dart';
 
-class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({super.key});
+import 'ProchainesFormations.dart';
+
+
+class UserDashboard extends StatefulWidget {
+  const UserDashboard({super.key});
 
   @override
-  State<AdminDashboard> createState() => AdminDashboardState();
+  State<UserDashboard> createState() => UserDashboardState();
 }
 
-class AdminDashboardState extends State<AdminDashboard> {
+class UserDashboardState extends State<UserDashboard> {
   String? _username;
 
   @override
@@ -54,61 +59,66 @@ class AdminDashboardState extends State<AdminDashboard> {
         foregroundColor: Colors.white,
         elevation: 8,
       ),
-      body: SingleChildScrollView(
+      
+      body: 
+      SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Wrap(
           spacing: 12,
           runSpacing: 12,
           children: [
             _buildDashboardCard(
-                context, Icons.people, 'Utilisateurs', Colors.green, cardWidth, () async {
+              context, Icons.people, 'Mes prochaines formations', Colors.green, cardWidth, () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>  AdminUsersPage()),
+                MaterialPageRoute(builder: (context) =>  UserProchainesFormationsPage()),
+              );
+              if (mounted) setState(() {});
+            },),
+              _buildDashboardCard(
+              context, Icons.apartment, 'Formations disponibles', Colors.teal, cardWidth, () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserFormationsDisponiblesPage()),
               );
               if (mounted) setState(() {});
             },),
             _buildDashboardCard(
-                context, Icons.bar_chart, 'Statistiques', Colors.orange, cardWidth, () async {
+              context, Icons.domain, 'Historique des formations', Colors.purple, cardWidth, () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AdminStatsPage()),
-              );
-              if (mounted) setState(() {});
-            },),
-
-            _buildDashboardCard(
-                context, Icons.domain, 'Départements', Colors.purple, cardWidth, () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AdminDepartmentsPage()),
-              );
-              if (mounted) setState(() {});
-            },),
-
-            _buildDashboardCard(
-                context, Icons.apartment, 'Organismes', Colors.teal, cardWidth, () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AdminOrganismesPage()),
+                MaterialPageRoute(builder: (context) => const UserHistoriquesFormationsPage()),
               );
               if (mounted) setState(() {});
             },),
 
             _buildDashboardCard(
-                context, Icons.message, 'Messagerie', Colors.red, cardWidth, () async {
+              context, Icons.bar_chart, 'Statistiques', Colors.orange, cardWidth, () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AdminProfileApp()),
+                MaterialPageRoute(builder: (context) => const UserstatistiquesPage()),
+              );
+              if (mounted) setState(() {});
+            },),
+
+
+
+
+
+            _buildDashboardCard(
+              context, Icons.message, 'Messagerie', Colors.red, cardWidth, () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserMessageriePage()),
               );
               if (mounted) setState(() {});
             },),
 
             _buildDashboardCard(
-                context, Icons.meeting_room, 'Réunions', Colors.pink, cardWidth, () async {
+              context, Icons.meeting_room, 'Réunions', Colors.pink, cardWidth, () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AdminReunionsPage()),
+                MaterialPageRoute(builder: (context) => const UserReunionsPage()),
               );
               if (mounted) setState(() {});
             },),
@@ -116,6 +126,7 @@ class AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
+
     );
 
   }

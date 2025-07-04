@@ -339,7 +339,8 @@ class _registerState extends State<register> {
                                       email: email,
                                       password: password,
                                       department: department!,
-                                      role: selectedRole!,
+                                      role: selectedRole,
+                                      poste: '',
                                     );
 
                                     if (result == null) {
