@@ -1,0 +1,177 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstproject/pages/admin/AdminOrganismesPage.dart';
+import 'package:firstproject/pages/admin/admin_users_page.dart';
+import 'package:firstproject/pages/user/userProfile.dart';
+import 'package:flutter/material.dart';
+import '../../../services/auth.dart';
+import '../../../widgets/custom_app_bar.dart';
+import 'AdminDepartmentsPage.dart';
+
+
+
+
+
+
+
+class DashboardEntites extends StatefulWidget {
+  const DashboardEntites({super.key});
+
+  @override
+  State<DashboardEntites> createState() => DashboardEntitesState();
+}
+
+class DashboardEntitesState extends State<DashboardEntites> {
+  String? _username;
+
+  // Define OLEA colors
+  final List<Color> oleaCardColors = [
+    const Color(0xFFB7482B), // Primary Reddish-Orange
+    const Color(0xFFF8AF3C), // Primary Orange
+    const Color(0xFF936037), // Secondary Brown
+    const Color(0xFF5BBBA0), // Complementary Turquoise
+    const Color(0xFF666666), // Primary Dark Gray
+    const Color(0xFF432918), // Secondary Dark Brown
+    const Color(0xFFC99FB5), // Complementary Pink
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsername();
+  }
+
+  Future<void> loadUsername() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+      setState(() {
+        _username = doc['username']; // ou 'nom' selon ton champ Firestore
+      });
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final int crossAxisCount = screenWidth < 600 ? 2 : 3;
+    final double cardWidth =
+        (screenWidth - 32 - (crossAxisCount - 1) * 12) / crossAxisCount;
+
+    int colorIndex = 0; // To cycle through the OLEA colors for the cards
+
+    return Scaffold(
+
+      // Set the background color of the entire page to a light OLEA color
+      backgroundColor: const Color(0xFFF0F0F0), // A very light gray, or use 0xFFCBBBA0 for a light beige
+      appBar: AppBar(
+        title: const Text('Gestion des Entités'),
+        backgroundColor: oleaPrimaryReddishOrange,
+      ),
+
+
+      body:
+      SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+
+
+            _buildDashboardCard(
+              context,
+              Icons.account_tree,
+              'Départements',
+              oleaCardColors[colorIndex++ % oleaCardColors.length], // Cycle couleur
+              cardWidth, () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AdminDepartmentsPage()),
+              );
+              if (mounted) setState(() {});
+            },),
+
+            // Add other cards here, cycling through colors
+
+
+            // Example for admin-specific cards if needed, using remaining colors
+            _buildDashboardCard(
+              context,
+              Icons.supervisor_account,
+              'Utilisateurs',
+              oleaCardColors[colorIndex++ % oleaCardColors.length], // Cycle couleur
+              cardWidth, () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  const AdminUsersPage()),
+              );
+              if (mounted) setState(() {});
+            },),
+
+              _buildDashboardCard(
+                context,
+                Icons.business,
+                'Organismes',
+                oleaCardColors[colorIndex++ % oleaCardColors.length], // Cycle color
+                cardWidth,
+                    () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AdminOrganismesPage()),
+                  );
+                  if (mounted) setState(() {});
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardCard(
+      BuildContext context,
+      IconData icon,
+      String title,
+      Color color, // This color will now come from the OLEA palette
+      double width, [
+        VoidCallback? onTap,
+      ]) {
+    return SizedBox(
+      width: width,
+      height: 130,
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: color.withOpacity(0.95), // Use the OLEA color directly
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 34, color: Colors.white), // Icons remain white for contrast
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white, // Text remains white for contrast
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -3,25 +3,25 @@ import 'package:flutter/material.dart';
 class DropdownModalite extends StatelessWidget {
   final String? selectedValue;
   final void Function(String?) onChanged;
+  final InputDecoration? decoration; // ⬅️ ajout du paramètre
 
-  const DropdownModalite(
-      {
+  const DropdownModalite({
     Key? key,
     required this.selectedValue,
     required this.onChanged,
+    this.decoration, // ⬅️ ici aussi
   }) : super(key: key);
 
   final List<Map<String, dynamic>> modalites = const [
     {'nom': 'Présentiel'},
-    {'nom': 'Distanciel'},
-    {'nom': 'Blended-learning'},
+    {'nom': 'En ligne'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       value: selectedValue,
-      decoration: InputDecoration(
+      decoration: decoration ?? InputDecoration(
         labelText: 'Modalité',
         prefixIcon: Icon(Icons.computer),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

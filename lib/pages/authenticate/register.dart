@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../services/auth.dart';
 import '../../widgets/department_dropdown.dart';
+import 'package:firstproject/pages/authenticate/verificationEmail.dart';
+
 
 class register extends StatefulWidget {
   final Function toggleView;
@@ -17,6 +21,7 @@ class _registerState extends State<register> {
   String username="";
   String email = "";
   String? department; // initialisé à null
+  String poste=""; // variable sélectionnée
   String password = "";
   final TextEditingController adminCodeController = TextEditingController();
   String selectedRole = 'user'; // valeur par défaut
@@ -28,16 +33,18 @@ class _registerState extends State<register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      // Fond de la page avec une couleur OLEA claire (Beige)
+      backgroundColor: const Color(0xFFE3D9C0), // OLEA Light Beige
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Inscription",
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Colors.white, // Texte blanc pour contraste
           ),
         ),
-        backgroundColor: Colors.green[700],
+        // Couleur de l'AppBar principale OLEA (Rouge-Orange)
+        backgroundColor: const Color(0xFFB7482B), // OLEA Primary Reddish-Orange
         elevation: 0,
         centerTitle: true,
       ),
@@ -45,31 +52,33 @@ class _registerState extends State<register> {
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 32),
+              margin: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo OLEA
                   Container(
-                    margin: EdgeInsets.only(bottom: 40),
+                    margin: const EdgeInsets.only(bottom: 20),
                     child: Column(
                       children: [
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Text(
                           'OLEA | ONE',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.brown[700],
+                            // Couleur du logo OLEA (Chocolat foncé)
+                            color: const Color(0xFF432918), // OLEA Secondary Dark Brown
                             letterSpacing: 2,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'Rejoignez notre communauté',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            // Couleur du texte secondaire (Gris foncé)
+                            color: const Color(0xFF666666), // OLEA Primary Dark Gray
                           ),
                         ),
                       ],
@@ -79,17 +88,17 @@ class _registerState extends State<register> {
                   // Formulaire dans un conteneur stylisé
                   Container(
                     width: double.infinity,
-                    constraints: BoxConstraints(maxWidth: 400),
-                    padding: EdgeInsets.all(32),
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.white, // Fond du formulaire reste blanc pour la clarté
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
                           spreadRadius: 5,
                           blurRadius: 15,
-                          offset: Offset(0, 5),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -103,19 +112,22 @@ class _registerState extends State<register> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
+                              // Couleur du titre du formulaire (Chocolat foncé)
+                              color: const Color(0xFF432918), // OLEA Secondary Dark Brown
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 32),
+                          const SizedBox(height: 32),
 
+                          // Champ Nom d'utilisateur
                           TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Nom d\'utilisateur',
                               hintText: 'Entrez votre nom d\'utilisateur',
-                              prefixIcon: Icon(
+                              prefixIcon: const Icon(
                                 Icons.person_outline,
-                                color: Colors.green[700],
+                                // Couleur de l'icône (Rouge-Orange)
+                                color: Color(0xFFB7482B), // OLEA Primary Reddish-Orange
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
@@ -127,19 +139,21 @@ class _registerState extends State<register> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.green[700]!, width: 2),
+                                // Couleur du focus (Rouge-Orange)
+                                borderSide: const BorderSide(color: Color(0xFFB7482B), width: 2), // OLEA Primary Reddish-Orange
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               filled: true,
-                              fillColor: Colors.grey[50],
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              // Couleur de remplissage des champs (gris très clair)
+                              fillColor: Colors.grey[50], // Garde un gris très clair pour les champs
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                             ),
                             onChanged: (val) {
                               setState(() => username = val);
@@ -147,7 +161,7 @@ class _registerState extends State<register> {
                             validator: (val) => val!.isEmpty ? 'Entrez un nom d\'utilisateur' : null,
                           ),
 
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
                           // Champ Email
                           TextFormField(
@@ -155,9 +169,10 @@ class _registerState extends State<register> {
                             decoration: InputDecoration(
                               labelText: 'Email',
                               hintText: 'Entrez votre email',
-                              prefixIcon: Icon(
+                              prefixIcon: const Icon(
                                 Icons.email_outlined,
-                                color: Colors.green[700],
+                                // Couleur de l'icône (Rouge-Orange)
+                                color: Color(0xFFB7482B), // OLEA Primary Reddish-Orange
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
@@ -169,30 +184,38 @@ class _registerState extends State<register> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.green[700]!, width: 2),
+                                // Couleur du focus (Rouge-Orange)
+                                borderSide: const BorderSide(color: Color(0xFFB7482B), width: 2), // OLEA Primary Reddish-Orange
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               filled: true,
                               fillColor: Colors.grey[50],
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                             ),
                             onChanged: (val) {
                               setState(() => email = val);
                             },
-                            validator: (val) => val!.isEmpty ? 'Entrez un email' : null,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Entrez un email';
+                              } else if (!val.endsWith('@gmail.com')) {
+                                return 'Utilisez un email @gmail.com';
+                              }
+                              return null;
+                            },
                           ),
 
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
+                          // Dropdown pour le département
                           DepartmentDropdown(
-
                             selected: department,
                             onChanged: (value) {
                               setState(() {
@@ -201,44 +224,50 @@ class _registerState extends State<register> {
                             },
                           ),
 
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                          // Rôle (dropdown)
-                          DropdownButtonFormField<String>(
-                            value: selectedRole,
-                            items: ['user', 'admin'].map((role) {
-                              return DropdownMenuItem(
-                                value: role,
-                                child: Text(role.toUpperCase()),
-                              );
-                            }).toList(),
-                            onChanged: (val) {
-                              setState(() {
-                                selectedRole = val!;
-                              });
-                            },
-                            decoration: InputDecoration(labelText: 'Rôle'),
-                          ),
-                          // Champ "code admin" si rôle == admin
-                          if (selectedRole == 'admin')
-                            TextFormField(
-                              controller: adminCodeController,
-                              decoration: InputDecoration(labelText: 'Code Admin'),
-                              obscureText: true,
-                              validator: (val) {
-                                if (selectedRole == 'admin' &&
-                                    val != adminSecretCode) {
-                                  return 'Code admin incorrect';
-                                }
-                                return null;
-                              },
+                          // Champ Poste de travail
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Poste de travail',
+                              hintText: 'Entrez votre poste',
+                              prefixIcon: const Icon(
+                                Icons.work_outline,
+                                // Couleur de l'icône (Rouge-Orange)
+                                color: Color(0xFFB7482B), // OLEA Primary Reddish-Orange
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.grey[300]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                // Couleur du focus (Rouge-Orange)
+                                borderSide: const BorderSide(color: Color(0xFFB7482B), width: 2), // OLEA Primary Reddish-Orange
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[50],
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                             ),
-                          SizedBox(height: 20),
+                            onChanged: (val) {
+                              setState(() => poste = val);
+                            },
+                            validator: (val) => val == null || val.isEmpty ? 'Entrez votre poste' : null,
+                          ),
 
-
-
-
-
+                          const SizedBox(height: 20),
 
                           // Champ Mot de passe
                           TextFormField(
@@ -246,14 +275,16 @@ class _registerState extends State<register> {
                             decoration: InputDecoration(
                               labelText: 'Mot de passe',
                               hintText: 'Entrez votre mot de passe',
-                              prefixIcon: Icon(
+                              prefixIcon: const Icon(
                                 Icons.lock_outlined,
-                                color: Colors.green[700],
+                                // Couleur de l'icône (Rouge-Orange)
+                                color: Color(0xFFB7482B), // OLEA Primary Reddish-Orange
                               ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                  color: Colors.grey[600],
+                                  // Couleur de l'icône (Gris foncé)
+                                  color: const Color(0xFF666666), // OLEA Primary Dark Gray
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -271,19 +302,20 @@ class _registerState extends State<register> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.green[700]!, width: 2),
+                                // Couleur du focus (Rouge-Orange)
+                                borderSide: const BorderSide(color: Color(0xFFB7482B), width: 2), // OLEA Primary Reddish-Orange
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                                borderSide: const BorderSide(color: Colors.red, width: 2),
                               ),
                               filled: true,
                               fillColor: Colors.grey[50],
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                             ),
                             onChanged: (val) {
                               setState(() => password = val);
@@ -293,26 +325,26 @@ class _registerState extends State<register> {
                                 : null,
                           ),
 
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
                           // Message d'erreur
                           if (error.isNotEmpty)
                             Container(
-                              padding: EdgeInsets.all(12),
-                              margin: EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
-                                color: Colors.red[50],
+                                color: Colors.red[50], // Couleur de fond d'erreur reste rouge clair
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.red[200]!),
+                                border: Border.all(color: Colors.red[200]!), // Couleur de bordure d'erreur reste rouge clair
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.error_outline, color: Colors.red, size: 20),
-                                  SizedBox(width: 8),
+                                  const Icon(Icons.error_outline, color: Colors.red, size: 20), // Icône d'erreur reste rouge
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       error,
-                                      style: TextStyle(color: Colors.red[700], fontSize: 14),
+                                      style: TextStyle(color: Colors.red[700], fontSize: 14), // Texte d'erreur reste rouge
                                     ),
                                   ),
                                 ],
@@ -320,10 +352,11 @@ class _registerState extends State<register> {
                             ),
 
                           // Bouton d'inscription
-                          Container(
+                          SizedBox(
                             width: double.infinity,
                             height: 56,
-                            child: ElevatedButton(
+                            child:
+                            ElevatedButton(
                               onPressed: _isLoading ? null : () async {
                                 if (_formKey.currentState!.validate()) {
                                   setState(() {
@@ -331,26 +364,39 @@ class _registerState extends State<register> {
                                     error = '';
                                   });
 
-                                  // Délai artificiel pour voir le loader (à supprimer en production)
-                                  await Future.delayed(Duration(seconds: 2));
+                                  await Future.delayed(const Duration(seconds: 1)); // optionnel pour l'effet de chargement
+
                                   if (department != null && selectedRole != null) {
-                                    dynamic result = await _auth.registerWithEmailAndPassword(
+                                    bool success = await _auth.registerWithEmailAndPassword(
                                       username: username,
                                       email: email,
                                       password: password,
                                       department: department!,
-                                      role: selectedRole,
-                                      poste: '',
+                                      poste: poste,
+                                      role: 'user',
+                                      emailVerified: false,
+
                                     );
 
-                                    if (result == null) {
+                                    if (success == true) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => EmailVerificationPage(
+                                            username: username,
+                                            email: email,
+                                            department: department!,
+                                            poste: poste,
+                                          ),
+                                        ),
+                                      );
+
+                                    }
+                                    else {
                                       setState(() {
-                                        error = 'Veuillez entrer un email valide';
+                                        error = "Échec de l'inscription. Vérifiez l’e-mail et réessayez.";
                                         _isLoading = false;
                                       });
-                                    } else {
-                                      setState(() => _isLoading = false);
-                                      // Tu peux aussi faire Navigator.push ici si besoin
                                     }
                                   } else {
                                     setState(() {
@@ -361,24 +407,27 @@ class _registerState extends State<register> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[600],
+                                // Couleur du bouton (Rouge-Orange)
+                                backgroundColor: const Color(0xFFB7482B), // OLEA Primary Reddish-Orange
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 elevation: 3,
-                                shadowColor: Colors.green.withOpacity(0.4),
+                                // Ombre du bouton (Rouge-Orange avec opacité)
+                                shadowColor: const Color(0xFFB7482B).withOpacity(0.4), // OLEA Primary Reddish-Orange
                               ),
                               child: _isLoading
                                   ? Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SpinKitFadingCircle(
-                                    color: Colors.red,
+                                    // Couleur du spinner (Orange principal)
+                                    color: const Color(0xFFF8AF3C), // OLEA Primary Orange
                                     size: 20.0,
                                   ),
-                                  SizedBox(width: 12),
-                                  Text(
+                                  const SizedBox(width: 12),
+                                  const Text(
                                     'Inscription...',
                                     style: TextStyle(
                                       fontSize: 16,
@@ -387,7 +436,7 @@ class _registerState extends State<register> {
                                   ),
                                 ],
                               )
-                                  : Text(
+                                  : const Text(
                                 "S'inscrire",
                                 style: TextStyle(
                                   fontSize: 16,
@@ -401,29 +450,33 @@ class _registerState extends State<register> {
                     ),
                   ),
 
-                  SizedBox(height: 24),
+                  // Ajustement des SizedBox pour remonter le bouton "Se connecter"
+                  const SizedBox(height: 10), // Réduit l'espace après le formulaire principal
 
                   // Lien vers connexion
                   Text(
                     'Vous avez déjà un compte ?',
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      // Couleur du texte (Gris foncé)
+                      color: const Color(0xFF666666), // OLEA Primary Dark Gray
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 4), // Réduit l'espace entre le texte et le bouton
                   GestureDetector(
                     onTap: () => widget.toggleView(),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.green[600]!),
+                        // Bordure du bouton (Rouge-Orange)
+                        border: Border.all(color: const Color(0xFFB7482B)), // OLEA Primary Reddish-Orange
                         borderRadius: BorderRadius.circular(25),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Se connecter',
                         style: TextStyle(
-                          color: Colors.green[700],
+                          // Couleur du texte (Rouge-Orange)
+                          color: Color(0xFFB7482B), // OLEA Primary Reddish-Orange
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),

@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstproject/pages/acceuil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path/path.dart';
 
 import '../../services/auth.dart';
 import '../../widgets/custom_app_bar.dart';
+import 'PrgSeances.dart';
 import 'UserDashboard.dart';
 
 
@@ -53,7 +55,7 @@ class _UserHomePageState extends State<Userhomepage> {
         getAppBarTitle: () {
           switch (_currentIndex) {
             case 0:
-              return 'Tableau de Bord User';
+              return 'Dashboard OLEA';
             case 1:
               return 'Liste des Formations';
             default:
@@ -67,10 +69,10 @@ class _UserHomePageState extends State<Userhomepage> {
       ),
       body: IndexedStack(
         index: _currentIndex,
-        children: [
+        children: const [
           UserDashboard(),
-          //FormationsListPage(),
-          //Addformation(),
+          PrgSeancesPage(),
+
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -87,7 +89,7 @@ class _UserHomePageState extends State<Userhomepage> {
         elevation: 8,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Dashboard'),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Mes Formations'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Mes Séances'),
         ],
       ),
     );

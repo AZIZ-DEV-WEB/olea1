@@ -14,6 +14,7 @@ class MyUser {
   final String poste;
   final String photoUrl;
   final DateTime joinDate;
+  final bool emailVerified;
 
 
 
@@ -27,6 +28,7 @@ class MyUser {
     required this.poste,
     required this.photoUrl,
     required this.joinDate,
+    required this.emailVerified,
 
   });
 
@@ -46,6 +48,7 @@ class MyUser {
         role: data['role'] as String? ?? '',
         photoUrl: data['photoUrl'] as String? ?? '',
         joinDate: (data['joinDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        emailVerified: data['emailVerified'] as bool? ?? false,
       );
     }).toList());
   }

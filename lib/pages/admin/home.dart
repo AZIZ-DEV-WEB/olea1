@@ -52,11 +52,11 @@ class _AdminHomeState extends State<AdminHome> {
         getAppBarTitle: () {
           switch (_currentIndex) {
             case 0:
-              return 'Tableau de Bord Admin';
+              return 'Dashboard';
             case 1:
-              return 'Liste des Formations';
+              return 'Formations';
             case 2:
-              return 'Ajouter une Formation';
+              return '+ Ajout Formation';
             default:
               return 'Admin';
           }

@@ -34,22 +34,27 @@ class _AdminProfileAppState extends State<AdminProfileApp>
   File? _selectedImage;
   String? _photoUrl;
 
-  // États des toggles
+  // États des toggles (non utilisés dans l'UI actuelle, mais conservés)
   bool _emailNotifications = true;
   bool _pushNotifications = false;
   bool _darkMode = false;
   bool _autoLogin = true;
 
-  // Statistiques (simulées)
-  int _usersManaged = 1247;
-  double _systemUptime = 98.5;
-  int _monthlyActions = 156;
+
+
+  // Couleurs OLEA
+  final Color oleaPrimaryReddishOrange = const Color(0xFFB7482B);
+  final Color oleaPrimaryOrange = const Color(0xFFF8AF3C);
+  final Color oleaSecondaryBrown = const Color(0xFF936037);
+  final Color oleaPrimaryDarkGray = const Color(0xFF666666);
+  final Color oleaSecondaryDarkBrown = const Color(0xFF432918);
+  final Color oleaLightBeige = const Color(0xFFE3D9C0);
+
 
   @override
   void initState() {
     super.initState();
     _setupAnimations();
-    _startStatsSimulation();
     _loadUserData();
   }
 
@@ -69,7 +74,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
           setState(() {
             _nameController.text = data['username'] ?? '';
             _emailController.text = firebaseUser.email ?? '';
-            _phoneController.text = data['telephone'] ?? '';
+            _phoneController.text = data['phone'] ?? '';
             _posteController.text = data['poste'] ?? '';
             department = data['department'] ?? '';
             _photoUrl = data['photoUrl'] ?? null;
@@ -101,19 +106,6 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     _animationController.forward();
   }
 
-  void _startStatsSimulation() {
-    // Simulation de mise à jour des statistiques
-    Future.delayed(const Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          _systemUptime =
-              (_systemUptime + (DateTime.now().millisecond % 10 - 5) * 0.01)
-                  .clamp(95.0, 100.0);
-        });
-        _startStatsSimulation();
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -121,6 +113,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _posteController.dispose(); // Ajouté pour disposer le contrôleur de poste
     super.dispose();
   }
 
@@ -128,11 +121,12 @@ class _AdminProfileAppState extends State<AdminProfileApp>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+            // Couleurs OLEA pour le dégradé de fond
+            colors: [oleaLightBeige, oleaSecondaryBrown], // Ex: Beige clair vers Marron secondaire
           ),
         ),
         child: SafeArea(
@@ -193,25 +187,27 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                 HapticFeedback.lightImpact();
                 Navigator.pop(
                   context,
+                  // Utilisation de PushReplacement pour éviter d'empiler les pages
+                  // et un PageRouteBuilder pour une transition personnalisée
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        const AdminDashboard(),
+                    const AdminDashboard(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(-1.0, 0.0);
-                          const end = Offset.zero;
-                          const curve = Curves.easeInOut;
+                      const begin = Offset(-1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.easeInOut;
 
-                          var tween = Tween(
-                            begin: begin,
-                            end: end,
-                          ).chain(CurveTween(curve: curve));
+                      var tween = Tween(
+                        begin: begin,
+                        end: end,
+                      ).chain(CurveTween(curve: curve));
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
                     transitionDuration: const Duration(milliseconds: 300),
                   ),
                 );
@@ -225,16 +221,16 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.arrow_back_ios,
                       color: Colors.white,
                       size: 18,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
+                    SizedBox(width: 8),
+                    Text(
                       'Dashboard',
                       style: TextStyle(
                         color: Colors.white,
@@ -254,12 +250,12 @@ class _AdminProfileAppState extends State<AdminProfileApp>
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.person, color: Colors.white, size: 18),
-                const SizedBox(width: 8),
-                const Text(
+                Icon(Icons.person, color: Colors.white, size: 18),
+                SizedBox(width: 8),
+                Text(
                   'Profil Admin',
                   style: TextStyle(
                     color: Colors.white,
@@ -292,11 +288,12 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                     children: [
                       _buildPersonalInfoCard(),
                       //const SizedBox(height: 24),
-                      //_buildRecentActivityCard(),
+                      //_buildRecentActivityCard(), // Commenté car non implémenté
                     ],
                   ),
                 ),
                 const SizedBox(width: 24),
+                // Vous pouvez ajouter d'autres cartes ici pour le layout desktop
                 Expanded(child: Column(children: [])),
               ],
             ),
@@ -315,7 +312,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
           const SizedBox(height: 24),
           _buildPersonalInfoCard(),
           //const SizedBox(height: 24),
-          //_buildRecentActivityCard(),
+          //_buildRecentActivityCard(), // Commenté car non implémenté
         ],
       ),
     );
@@ -325,7 +322,12 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
       child: Column(
-        children: [const SizedBox(height: 20), _buildPersonalInfoCard()],
+        children: [
+          const SizedBox(height: 20),
+          _buildProfileHeader(), // Ajout de l'en-tête pour mobile
+          const SizedBox(height: 20),
+          _buildPersonalInfoCard()
+        ],
       ),
     );
   }
@@ -355,8 +357,9 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      shaderCallback: (bounds) => LinearGradient(
+                        // Dégradé OLEA pour le nom de l'utilisateur
+                        colors: [oleaPrimaryReddishOrange, oleaPrimaryOrange],
                       ).createShader(bounds),
                       child: Text(
                         _nameController.text.isEmpty
@@ -365,42 +368,24 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                         style: const TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.white, // Couleur masquée par le shader
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _posteController.text.isEmpty
-                          ? 'Administrateur Système'
+                          ? 'Administrateur'
                           : _posteController.text,
-                      style: const TextStyle(fontSize: 18, color: Colors.grey),
+                      style: TextStyle(fontSize: 18, color: oleaSecondaryDarkBrown), // Poste en Chocolat foncé OLEA
                     ),
                     const SizedBox(height: 16),
-                    _buildStatusBadge(),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 32),
-
-          /// ✅ Ici on utilise StreamBuilder
-          StreamBuilder<List<MyUser>>(
-            stream: MyUser.streamUsers(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return const Text('Erreur lors du chargement des statistiques');
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Text('Aucun utilisateur trouvé');
-              }
-
-              final users = snapshot.data!;
-              return _buildStatsGrid(users);
-            },
-          ),
         ],
       ),
     );
@@ -418,7 +403,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
           height: 120,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.grey[200],
+            color: oleaLightBeige, // Fond de l'avatar en Beige clair OLEA
             image: _photoUrl != null
                 ? DecorationImage(
               image: NetworkImage(_photoUrl!),
@@ -430,10 +415,10 @@ class _AdminProfileAppState extends State<AdminProfileApp>
               ? Center(
             child: Text(
               initials,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                color: oleaSecondaryDarkBrown, // Initiales en Chocolat foncé OLEA
               ),
             ),
           )
@@ -448,7 +433,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
               width: 35,
               height: 35,
               decoration: BoxDecoration(
-                color: const Color(0xFF667eea),
+                color: oleaPrimaryReddishOrange, // Bouton d'édition en Rouge-Orange OLEA
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8),
@@ -462,18 +447,6 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     );
   }
 
-  Widget _buildInitialsFallback() {
-    return Center(
-      child: Text(
-        _getInitials(_nameController.text),
-        style: const TextStyle(
-          fontSize: 36,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
   String _getInitials(String name) {
     final parts = name.trim().split(' ');
     if (parts.length >= 2) {
@@ -484,105 +457,6 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     return 'U';
   }
 
-
-  Widget _buildStatusBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF10b981), Color(0xFF34d399)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'En ligne',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsGrid(List<MyUser> users) {
-    final int totalUsers = users.length;
-
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2, // responsive mobile
-      childAspectRatio: 1.5,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      children: [_buildStatCard('$totalUsers', 'Utilisateurs gérés')],
-    );
-  }
-
-  Widget _buildStatsGridMobile() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      childAspectRatio: 1.3,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      children: [
-        _buildStatCard('$_usersManaged', 'Utilisateurs gérés'),
-        _buildStatCard(
-          '${_systemUptime.toStringAsFixed(1)}%',
-          'Uptime système',
-        ),
-        _buildStatCard('$_monthlyActions', 'Actions ce mois'),
-        _buildStatCard('24/7', 'Support actif'),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String number, String label) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            number,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF667eea),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildCard({
     required String title,
     required Widget child,
@@ -591,7 +465,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withOpacity(0.95), // Fond de carte légèrement transparent blanc
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -611,8 +485,9 @@ class _AdminProfileAppState extends State<AdminProfileApp>
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                    gradient: LinearGradient(
+                      // Dégradé OLEA pour l'icône de titre de carte
+                      colors: [oleaPrimaryReddishOrange, oleaPrimaryOrange],
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -622,9 +497,10 @@ class _AdminProfileAppState extends State<AdminProfileApp>
               ],
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: oleaSecondaryDarkBrown, // Titre de carte en Chocolat foncé OLEA
                 ),
               ),
             ],
@@ -644,13 +520,14 @@ class _AdminProfileAppState extends State<AdminProfileApp>
         children: [
           _buildTextField('Nom complet', _nameController),
           const SizedBox(height: 16),
-          _buildTextField('Email', _emailController),
+          _buildTextField('Email', _emailController, readOnly: true), // Email en lecture seule
           const SizedBox(height: 16),
           _buildTextField('Téléphone', _phoneController),
           const SizedBox(height: 16),
           _buildTextField('Poste', _posteController),
           const SizedBox(height: 16),
           DepartmentDropdown(
+
             selected: department,
             onChanged: (value) {
               setState(() {
@@ -661,68 +538,28 @@ class _AdminProfileAppState extends State<AdminProfileApp>
 
           const SizedBox(height: 24),
           _buildActionButton('Sauvegarder les modifications', Icons.save),
+          const SizedBox(height: 16), // Espace entre les boutons
+          _buildSecondaryButton('Réinitialiser le mot de passe', Icons.lock_reset), // Exemple de bouton secondaire
         ],
       ),
     );
   }
 
-  /*
-  Widget _buildRecentActivityCard() {
-    final activities = [
-      {
-        'title': 'Création de 3 nouveaux comptes utilisateurs',
-        'time': 'Il y a 2 heures',
-        'icon': Icons.group_add,
-      },
-      {
-        'title': 'Mise à jour des permissions système',
-        'time': 'Il y a 4 heures',
-        'icon': Icons.settings,
-      },
-      {
-        'title': 'Génération du rapport mensuel',
-        'time': 'Hier à 14:30',
-        'icon': Icons.bar_chart,
-      },
-      {
-        'title': 'Audit de sécurité effectué',
-        'time': 'Avant-hier',
-        'icon': Icons.security,
-      },
-    ];
-
-    return _buildCard(
-      title: 'Activité récente',
-      icon: Icons.timeline,
-      child: Column(
-        children: activities
-            .map(
-              (activity) => _buildActivityItem(
-                activity['title'] as String,
-                activity['time'] as String,
-                activity['icon'] as IconData,
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
-*/
-
   Widget _buildTextField(
-    String label,
-    TextEditingController? controller, {
-    bool isPassword = false,
-    String? Function(String?)? validator,
-  }) {
+      String label,
+      TextEditingController? controller, {
+        bool isPassword = false,
+        String? Function(String?)? validator,
+        bool readOnly = false, // Ajout de la propriété readOnly
+      }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: oleaPrimaryDarkGray, // Label en Gris foncé OLEA
           ),
         ),
         const SizedBox(height: 8),
@@ -730,6 +567,10 @@ class _AdminProfileAppState extends State<AdminProfileApp>
           controller: controller,
           obscureText: isPassword,
           validator: validator,
+          readOnly: readOnly, // Applique la propriété readOnly
+          style: TextStyle(
+            color: readOnly ? oleaPrimaryDarkGray : Colors.black87, // Couleur du texte pour lecture seule
+          ),
           decoration: InputDecoration(
             hintText: isPassword ? '••••••••' : null,
             filled: true,
@@ -738,100 +579,19 @@ class _AdminProfileAppState extends State<AdminProfileApp>
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: Colors.grey.shade300, width: 2),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Département',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: 'IT - Infrastructure',
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.8),
-            border: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder( // Ajout de enabledBorder pour cohérence
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: Colors.grey.shade300, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
+              borderSide: BorderSide(color: oleaPrimaryReddishOrange, width: 2), // Focus OLEA
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 12,
             ),
           ),
-          items: const [
-            DropdownMenuItem(
-              value: 'IT - Infrastructure',
-              child: Text('IT - Infrastructure'),
-            ),
-            DropdownMenuItem(
-              value: 'IT - Sécurité',
-              child: Text('IT - Sécurité'),
-            ),
-            DropdownMenuItem(
-              value: 'IT - Support',
-              child: Text('IT - Support'),
-            ),
-          ],
-          onChanged: (value) {},
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLanguageDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Langue de l\'interface',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: 'Français',
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.8),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 2),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
-          items: const [
-            DropdownMenuItem(value: 'Français', child: Text('Français')),
-            DropdownMenuItem(value: 'English', child: Text('English')),
-            DropdownMenuItem(value: 'Español', child: Text('Español')),
-          ],
-          onChanged: (value) {},
         ),
       ],
     );
@@ -853,7 +613,7 @@ class _AdminProfileAppState extends State<AdminProfileApp>
             borderRadius: BorderRadius.circular(10),
           ),
           foregroundColor: Colors.white,
-          backgroundColor: const Color(0xFF667eea),
+          backgroundColor: oleaPrimaryReddishOrange, // Bouton principal OLEA
         ),
       ),
     );
@@ -862,88 +622,116 @@ class _AdminProfileAppState extends State<AdminProfileApp>
   Widget _buildSecondaryButton(String text, IconData icon) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          // Action à implémenter
-        },
-        icon: Icon(icon, size: 18),
-        label: Text(text),
+      child:
+      ElevatedButton.icon(
+        icon: const Icon(Icons.lock_reset),
+        label: const Text('Modifier mot de passe'),
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          foregroundColor: Colors.white,
-          backgroundColor: const Color(0xFF64748b),
+          backgroundColor: Color(0xFFF8AF3C),
         ),
-      ),
+        onPressed: () => _showChangePasswordDialog(context),
+      )
     );
   }
 
-  Widget _buildActivityItem(String title, String time, IconData icon) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-              ),
-            ),
-            child: Icon(icon, color: Colors.white, size: 20),
+  void _showChangePasswordDialog(BuildContext context) {
+    final currentPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Changer le mot de passe',
+            style: TextStyle(color: Color(0xFFB7482B), fontWeight: FontWeight.bold),
           ),
-          const SizedBox(width: 16),
-          Expanded(
+          content: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  time,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
+                _buildPasswordField(currentPasswordController, 'Mot de passe actuel'),
+                const SizedBox(height: 10),
+                _buildPasswordField(newPasswordController, 'Nouveau mot de passe'),
+                const SizedBox(height: 10),
+                _buildPasswordField(confirmPasswordController, 'Confirmer le nouveau mot de passe'),
               ],
             ),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Annuler', style: TextStyle(color: Color(0xFF666666))),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF8AF3C),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () async {
+                final currentUser = FirebaseAuth.instance.currentUser;
+                final currentPassword = currentPasswordController.text.trim();
+                final newPassword = newPasswordController.text.trim();
+                final confirmPassword = confirmPasswordController.text.trim();
+
+                if (newPassword != confirmPassword) {
+                  _showSnackBar(context, 'Les mots de passe ne correspondent pas.', false);
+                  return;
+                }
+
+                if (newPassword.length < 6) {
+                  _showSnackBar(context, 'Le mot de passe doit contenir au moins 6 caractères.', false);
+                  return;
+                }
+
+                try {
+                  final cred = EmailAuthProvider.credential(
+                    email: currentUser!.email!,
+                    password: currentPassword,
+                  );
+
+                  await currentUser.reauthenticateWithCredential(cred);
+                  await currentUser.updatePassword(newPassword);
+
+                  Navigator.pop(context); // Ferme le dialog
+
+                  _showSnackBar(context, 'Mot de passe modifié avec succès.', true);
+                } catch (e) {
+                  _showSnackBar(context, 'Erreur : ${e.toString()}', false);
+                }
+              },
+              child: const Text('Modifier', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPasswordField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      obscureText: true,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Color(0xFF666666)),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Color(0xFFF8AF3C)),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
-  Widget _buildToggleItem(String title, bool value, Function(bool) onChanged) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 16)),
-          Switch(
-            value: value,
-            onChanged: (newValue) {
-              HapticFeedback.selectionClick();
-              onChanged(newValue);
-            },
-            activeColor: const Color(0xFF667eea),
-          ),
-        ],
+  void _showSnackBar(BuildContext context, String message, bool success) {
+    final bgColor = success ? const Color(0xFFB7482B) : Colors.green;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: bgColor,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -956,17 +744,25 @@ class _AdminProfileAppState extends State<AdminProfileApp>
           .collection('users')
           .doc(user.uid);
 
-      await docRef.update({
-        'username': _nameController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'poste': _posteController.text.trim(),
-        'department': department?.trim(),
-      });
+      try {
+        await docRef.update({
+          'username': _nameController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'poste': _posteController.text.trim(),
+          'department': department?.trim(),
+        });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Modifications enregistrées')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Modifications enregistrées avec succès !')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur lors de l\'enregistrement : ${e.toString()}')),
+          );
+        }
       }
     }
   }
@@ -984,25 +780,34 @@ class _AdminProfileAppState extends State<AdminProfileApp>
             .ref()
             .child('profile_pictures/${user.uid}.jpg');
 
-        await storageRef.putFile(file);
-        final downloadUrl = await storageRef.getDownloadURL();
+        try {
+          await storageRef.putFile(file);
+          final downloadUrl = await storageRef.getDownloadURL();
 
-        // Mise à jour Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({'photoUrl': downloadUrl});
+          // Mise à jour Firestore
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'photoUrl': downloadUrl});
 
-        setState(() {
-          _selectedImage = file;
-          _photoUrl = downloadUrl;
-        });
+          setState(() {
+            _selectedImage = file;
+            _photoUrl = downloadUrl;
+          });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Photo de profil mise à jour')),
-        );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Photo de profil mise à jour !')),
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erreur lors du téléchargement de l\'image : ${e.toString()}')),
+            );
+          }
+        }
       }
     }
   }
-
 }

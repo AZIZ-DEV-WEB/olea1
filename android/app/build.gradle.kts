@@ -1,21 +1,18 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
-
 android {
     namespace = "com.example.firstproject"
     compileSdk = flutter.compileSdkVersion
-    // ❌ ndkVersion supprimée ici
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // ✅ Activation du desugaring
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -28,6 +25,8 @@ android {
         targetSdk = 33
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Obligatoire pour Firebase Cloud Messaging
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -40,3 +39,18 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // ✅ Placé au bon endroit maintenant
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
+
+
+}
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+apply(plugin = "com.google.gms.google-services")

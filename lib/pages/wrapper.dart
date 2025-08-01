@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firstproject/pages/authenticate/authenticate.dart';
 import 'package:firstproject/pages/user/UserHomePage.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +22,11 @@ class wrapper extends StatelessWidget {
     switch(user.role) {
       case 'admin':
         return const AdminHome();
-      default:
+      case 'superadmin':
+        return const AdminHome();
+      case 'user':
         return const Userhomepage();
+        default:exit(0);
 
 
     }
